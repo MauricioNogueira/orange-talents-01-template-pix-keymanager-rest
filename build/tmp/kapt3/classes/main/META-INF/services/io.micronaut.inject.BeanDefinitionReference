@@ -1,0 +1,5 @@
+br.com.zup.grpc.$GrpcFactoryDefinitionClass
+br.com.zup.controller.$ClienteControllerDefinitionClass
+br.com.zup.handle.$GlobalExceptionHandleDefinitionClass
+br.com.zup.controller.$$ClienteControllerDefinition$InterceptedDefinitionClass
+br.com.zup.grpc.$GrpcFactory$PixServerGrpc0DefinitionClass
