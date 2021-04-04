@@ -5,11 +5,9 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
-class ConsultaResponse(
-    private val consultaChavePixResponse: ConsultaChavePixResponse
-) {
+class ConsultaResponse{
 
-    fun converte(): Map<String, Any> {
+    fun converte(consultaChavePixResponse: ConsultaChavePixResponse): Map<String, Any> {
 
 
         val conta = mapOf(

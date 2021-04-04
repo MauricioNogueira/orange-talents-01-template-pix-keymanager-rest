@@ -8,11 +8,15 @@ import br.com.zup.requests.RemoveChavePixRequest
 import br.com.zup.response.ConsultaGRPCResponse
 import br.com.zup.response.ConsultaResponse
 import br.com.zup.service.CriarRequestBuildConsultaService
+import br.com.zup.service.CriarRequestBuildListarChavesService
 import com.google.gson.Gson
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.*
 import io.micronaut.validation.Validated
 import org.slf4j.LoggerFactory
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.util.*
 import javax.inject.Inject
 import javax.validation.Valid
@@ -21,7 +25,8 @@ import javax.validation.Valid
 @Controller("/api/clientes")
 class ClienteController(
     @Inject private val keyManagerGrpcClient: KeyManagerGrpcServiceGrpc.KeyManagerGrpcServiceBlockingStub,
-    @Inject private val consultarChavePixService: CriarRequestBuildConsultaService
+    @Inject private val consultarChavePixService: CriarRequestBuildConsultaService,
+    @Inject private val criarRequestBuildListarChavesService: CriarRequestBuildListarChavesService
 ) {
 
     val logger = LoggerFactory.getLogger(this.javaClass)
@@ -55,10 +60,37 @@ class ClienteController(
 
         val response: ConsultaChavePixResponse = this.keyManagerGrpcClient.consultaChavePix(requestBuild)
 
-        return HttpResponse.ok(ConsultaResponse(response).converte())
+        logger.info("consulta da chave pix do cliente $clienteId foi realizada com sucesso")
+
+        return HttpResponse.ok(ConsultaResponse().converte(response))
+    }
+
+    @Get("/{clienteId}/listar-chaves-pix")
+    fun listarChavesPix(@PathVariable clienteId: UUID): HttpResponse<Any> {
+        val requestBuild = this.criarRequestBuildListarChavesService.toGRPCRequest(clienteId)
+
+        val response = this.keyManagerGrpcClient.listarChavePix(requestBuild)
+
+        val lista = mutableListOf<Any>()
+
+        response.chavesPixList.forEach { chave ->
+            lista.add(ChavePixInfo(
+                clienteId = chave.clienteId,
+                tipoChave = chave.tipoChave,
+                valorChave = chave.valorChave,
+                tipoConta = chave.tipoConta.name,
+                criacaoChave = LocalDateTime.ofInstant(Instant.ofEpochSecond(chave.criacaoChave.seconds, chave.criacaoChave.nanos.toLong()), ZoneOffset.UTC)
+            ))
+        }
+
+        logger.info("listagem de chaves pix do cliente $clienteId foi realizada com sucesso")
+
+        return HttpResponse.ok(lista)
     }
 }
 
 // Cadastro de chave PIX
 data class Response(val message: String, val data: DataChavePix) {}
 data class DataChavePix(val clienteId: String, val pixId: String) {}
+
+data class ChavePixInfo(val clienteId: String, val tipoChave: String, val valorChave: String, val tipoConta: String, val criacaoChave: LocalDateTime) {}
