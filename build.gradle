@@ -38,6 +38,7 @@ dependencies {
     implementation ("org.hibernate:hibernate-validator:7.0.1.Final")
 
     implementation("io.micronaut.grpc:micronaut-grpc-client-runtime")
+    implementation ("com.google.code.gson:gson:2.8.6")
 
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
