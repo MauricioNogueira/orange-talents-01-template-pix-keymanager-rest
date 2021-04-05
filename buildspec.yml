@@ -7,11 +7,14 @@ phases:
   pre_build:
     commands:
       - echo Nothing to do in the pre_build phase...
+      - wget https://services.gradle.org/distributions/gradle-6.8.3-all.zip
+      - unzip -d /opt/gradle gradle-6.8.3-all.zip
   build:
     commands:
-      - gradle clean
-      - gradle compileKotlin
-      - gradle build
+      - /opt/gradle/gradle-6.8.3-all/bin/gradle -version
+      - /opt/gradle/gradle-6.8.3-all/bin/gradle clean
+      - /opt/gradle/gradle-6.8.3-all/bin/gradle compileKotlin
+      - /opt/gradle/gradle-6.8.3-all/bin/gradle build
   post_build:
     commands:
       - echo Build completed on `date`
